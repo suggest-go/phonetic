@@ -3,6 +3,7 @@ package phonetic
 import (
 	"errors"
 	"fmt"
+	"unicode"
 )
 
 // ErrCharIsNotMapped tells that the given character could not be processed
@@ -32,11 +33,12 @@ func NewSoundexEncoder() Encoder {
 
 // inspired by https://github.com/apache/commons-codec/blob/master/src/main/java/org/apache/commons/codec/language/Soundex.java
 func (s soundex) Encode(source string) (string, error) {
-	if len(source) == 0 {
+	chars := clean(source)
+
+	if len(chars) == 0 {
 		return "", nil
 	}
 
-	chars := []rune(source)
 	lastDigit, err := mapChar(chars[0])
 
 	if err != nil {
@@ -72,4 +74,20 @@ func mapChar(ch rune) (rune, error) {
 	}
 
 	return charsMapping[index], nil
+}
+
+func clean(source string) []rune {
+	if len(source) == 0 {
+		return nil
+	}
+
+	cleaned := make([]rune, 0, len(source))
+
+	for _, ch := range source {
+		if unicode.IsLetter(ch) {
+			cleaned = append(cleaned, unicode.ToUpper(ch))
+		}
+	}
+
+	return cleaned
 }

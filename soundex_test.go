@@ -54,13 +54,18 @@ func TestSoundex(t *testing.T) {
 		},
 		{
 			source: "test",
-			hash:   "",
-			err:    ErrCharIsNotMapped,
+			hash:   "T230",
+			err:    nil,
 		},
 		{
 			source: "TeST",
-			hash:   "",
-			err:    ErrCharIsNotMapped,
+			hash:   "T230",
+			err:    nil,
+		},
+		{
+			source: "brown",
+			hash:   "B650",
+			err:    nil,
 		},
 	}
 
