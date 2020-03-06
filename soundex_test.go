@@ -86,3 +86,22 @@ func TestSoundex(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkSoundex(b *testing.B) {
+	words := []string{
+		"inpdendence",
+		"approxmiation",
+		"testing",
+		"accuracy",
+	}
+
+	encoder := NewSoundexEncoder()
+
+	for i := 0; i < b.N; i++ {
+		source := words[i%len(words)]
+
+		if _, err := encoder.Encode(source); err != nil {
+			b.Fatalf("unexpected error: %v", err)
+		}
+	}
+}
