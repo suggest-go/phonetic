@@ -58,7 +58,7 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 		}
 	}
 
-	return "", nil
+	return b.String(), nil
 }
 
 func handleAEIOUY(b *strings.Builder, index int) int {
@@ -69,18 +69,19 @@ func handleAEIOUY(b *strings.Builder, index int) int {
 	return index + 1
 }
 
-var mapBFKNQV = map[rune][2]rune{
-	'B': [2]rune{'P', 'B'},
-	'F': [2]rune{'F', 'F'},
-	'K': [2]rune{'K', 'K'},
-	'N': [2]rune{'N', 'N'},
-	'Q': [2]rune{'K', 'Q'},
-	'V': [2]rune{'F', 'V'},
+var mapBFKNQV = map[rune][]rune{
+	'B': {'P', 'B'},
+	'F': {'F', 'F'},
+	'K': {'K', 'K'},
+	'N': {'N', 'N'},
+	'Q': {'K', 'Q'},
+	'V': {'F', 'V'},
 }
 
 func handleBFKNQV(b *strings.Builder, chars []rune, index int) int {
 	ch := chars[index]
-	curr, next := mapBFKNQV[ch]
+	mapped := mapBFKNQV[ch]
+	curr, next := mapped[0], mapped[1]
 
 	b.WriteRune(curr)
 
@@ -94,7 +95,7 @@ func handleBFKNQV(b *strings.Builder, chars []rune, index int) int {
 }
 
 func handleC(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleD(b *strings.Builder, chars []rune, index int) int {
@@ -118,46 +119,47 @@ func handleD(b *strings.Builder, chars []rune, index int) int {
 }
 
 func handleG(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleH(b *strings.Builder, chars []rune, index int) int {
+	return index
 }
 
 func handleJ(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleL(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleP(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleR(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleS(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleT(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleW(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleX(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func handleZ(b *strings.Builder, chars []rune, index int) int {
-
+	return index
 }
 
 func contains(chars []rune, start, length int, criteria ...[]rune) bool {
