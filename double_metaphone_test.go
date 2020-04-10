@@ -1,7 +1,6 @@
 package phonetic
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -10,7 +9,7 @@ func TestHandle(t *testing.T) {
 		name           string
 		chars          []rune
 		index          int
-		handler        func(b *strings.Builder, chars []rune, index int) int
+		handler        func(b doubleMetaphoneResult, chars []rune, index int) int
 		expectedIndex  int
 		expectedString string
 	}{
@@ -122,14 +121,14 @@ func TestHandle(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			b := &strings.Builder{}
+			b := newDoubleMetaphoneResult()
 			actualIndex := testCase.handler(b, testCase.chars, testCase.index)
 
 			if actualIndex != testCase.expectedIndex {
 				t.Errorf("test fail, expected %d, got %d", testCase.expectedIndex, actualIndex)
 			}
 
-			actualString := b.String()
+			actualString := b.primary.String()
 
 			if actualString != testCase.expectedString {
 				t.Errorf("test fail, expected %s, got %s", testCase.expectedString, actualString)

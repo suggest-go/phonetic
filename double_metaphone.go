@@ -10,6 +10,44 @@ const (
 type doubleMetaphone struct {
 }
 
+type doubleMetaphoneResult struct {
+	primary   *strings.Builder
+	alternate *strings.Builder
+}
+
+func newDoubleMetaphoneResult() doubleMetaphoneResult {
+	return doubleMetaphoneResult{
+		&strings.Builder{},
+		&strings.Builder{},
+	}
+}
+
+func (r doubleMetaphoneResult) append(ch rune) {
+	r.appendPrimary(ch)
+	r.appendAlternate(ch)
+}
+
+func (r doubleMetaphoneResult) appendPrimary(ch rune) {
+	r.primary.WriteRune(ch)
+}
+
+func (r doubleMetaphoneResult) appendAlternate(ch rune) {
+	r.alternate.WriteRune(ch)
+}
+
+func (r doubleMetaphoneResult) appendString(str string) {
+	r.primary.WriteString(str)
+	r.alternate.WriteString(str)
+}
+
+func (r doubleMetaphoneResult) string() string {
+	return r.primary.String() + "#" + r.alternate.String()
+}
+
+func (r doubleMetaphoneResult) isComplete() bool {
+	return r.primary.Len() >= maxCodeLen && r.alternate.Len() >= maxCodeLen
+}
+
 // inspired by https://github.com/apache/commons-codec/blob/master/src/main/java/org/apache/commons/codec/language/DoubleMetaphone.java
 func (d doubleMetaphone) Encode(source string) (string, error) {
 	chars := clean(source)
@@ -18,10 +56,10 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 		return "", nil
 	}
 
-	b := &strings.Builder{}
+	b := newDoubleMetaphoneResult()
 	index := 0
 
-	for index < len(chars) && b.Len() < maxCodeLen {
+	for index < len(chars) && !b.isComplete() {
 		switch ch := chars[index]; ch {
 		case 'A', 'E', 'I', 'O', 'U', 'Y':
 			index = handleAEIOUY(b, index)
@@ -40,7 +78,7 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 		case 'L':
 			index = handleL(b, chars, index)
 		case 'M':
-			b.WriteRune('M')
+			b.append('M')
 			// TODO finish me
 		case 'P':
 			index = handleP(b, chars, index)
@@ -59,12 +97,12 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 		}
 	}
 
-	return b.String(), nil
+	return b.string(), nil
 }
 
-func handleAEIOUY(b *strings.Builder, index int) int {
+func handleAEIOUY(b doubleMetaphoneResult, index int) int {
 	if index == 0 {
-		b.WriteRune('A')
+		b.append('A')
 	}
 
 	return index + 1
@@ -80,12 +118,12 @@ var mapBFKNRQV = map[rune][]rune{
 	'V': {'F', 'V'},
 }
 
-func handleBFKNRQV(b *strings.Builder, chars []rune, index int) int {
+func handleBFKNRQV(b doubleMetaphoneResult, chars []rune, index int) int {
 	ch := chars[index]
 	mapped := mapBFKNRQV[ch]
 	curr, next := mapped[0], mapped[1]
 
-	b.WriteRune(curr)
+	b.append(curr)
 
 	if index+1 < len(chars) && chars[index+1] == next {
 		index += 2
@@ -96,37 +134,37 @@ func handleBFKNRQV(b *strings.Builder, chars []rune, index int) int {
 	return index
 }
 
-func handleC(b *strings.Builder, chars []rune, index int) int {
+func handleC(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleD(b *strings.Builder, chars []rune, index int) int {
+func handleD(b doubleMetaphoneResult, chars []rune, index int) int {
 	if contains(chars, index, 2, []rune{'D', 'G'}) {
 		if contains(chars, index+2, 1, []rune{'I'}, []rune{'E'}, []rune{'Y'}) {
-			b.WriteRune('J')
+			b.append('J')
 			index += 3
 		} else {
-			b.WriteString("TK")
+			b.appendString("TK")
 			index += 2
 		}
 	} else if contains(chars, index, 2, []rune{'D', 'T'}, []rune{'D', 'D'}) {
-		b.WriteRune('T')
+		b.append('T')
 		index += 2
 	} else {
-		b.WriteRune('T')
+		b.append('T')
 		index++
 	}
 
 	return index
 }
 
-func handleG(b *strings.Builder, chars []rune, index int) int {
+func handleG(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleH(b *strings.Builder, chars []rune, index int) int {
+func handleH(b doubleMetaphoneResult, chars []rune, index int) int {
 	if (index == 0 || isVowel(chars[index-1])) && index+1 < len(chars) && isVowel(chars[index+1]) {
-		b.WriteRune('H')
+		b.append('H')
 		index += 2
 	} else {
 		index++
@@ -135,20 +173,20 @@ func handleH(b *strings.Builder, chars []rune, index int) int {
 	return index
 }
 
-func handleJ(b *strings.Builder, chars []rune, index int) int {
+func handleJ(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleL(b *strings.Builder, chars []rune, index int) int {
+func handleL(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleP(b *strings.Builder, chars []rune, index int) int {
+func handleP(b doubleMetaphoneResult, chars []rune, index int) int {
 	if index+1 < len(chars) && chars[index+1] == 'H' {
-		b.WriteRune('F')
+		b.append('F')
 		index += 2
 	} else {
-		b.WriteRune('P')
+		b.append('P')
 
 		if contains(chars, index+1, 1, []rune{'P'}, []rune{'B'}) {
 			index++
@@ -160,23 +198,23 @@ func handleP(b *strings.Builder, chars []rune, index int) int {
 	return index
 }
 
-func handleS(b *strings.Builder, chars []rune, index int) int {
+func handleS(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleT(b *strings.Builder, chars []rune, index int) int {
+func handleT(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleW(b *strings.Builder, chars []rune, index int) int {
+func handleW(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleX(b *strings.Builder, chars []rune, index int) int {
+func handleX(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleZ(b *strings.Builder, chars []rune, index int) int {
+func handleZ(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
