@@ -2,7 +2,10 @@ package phonetic
 
 import "strings"
 
-const maxCodeLen = 4
+const (
+	maxCodeLen = 4
+	vowels     = "AEIOUY"
+)
 
 type doubleMetaphone struct {
 }
@@ -22,8 +25,8 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 		switch ch := chars[index]; ch {
 		case 'A', 'E', 'I', 'O', 'U', 'Y':
 			index = handleAEIOUY(b, index)
-		case 'B', 'F', 'K', 'N', 'Q', 'V':
-			index = handleBFKNQV(b, chars, index)
+		case 'B', 'F', 'K', 'N', 'R', 'Q', 'V':
+			index = handleBFKNRQV(b, chars, index)
 		case 'C':
 			index = handleC(b, chars, index)
 		case 'D':
@@ -41,8 +44,6 @@ func (d doubleMetaphone) Encode(source string) (string, error) {
 			// TODO finish me
 		case 'P':
 			index = handleP(b, chars, index)
-		case 'R':
-			index = handleR(b, chars, index)
 		case 'S':
 			index = handleS(b, chars, index)
 		case 'T':
@@ -69,18 +70,19 @@ func handleAEIOUY(b *strings.Builder, index int) int {
 	return index + 1
 }
 
-var mapBFKNQV = map[rune][]rune{
+var mapBFKNRQV = map[rune][]rune{
 	'B': {'P', 'B'},
 	'F': {'F', 'F'},
 	'K': {'K', 'K'},
 	'N': {'N', 'N'},
+	'R': {'R', 'R'},
 	'Q': {'K', 'Q'},
 	'V': {'F', 'V'},
 }
 
-func handleBFKNQV(b *strings.Builder, chars []rune, index int) int {
+func handleBFKNRQV(b *strings.Builder, chars []rune, index int) int {
 	ch := chars[index]
-	mapped := mapBFKNQV[ch]
+	mapped := mapBFKNRQV[ch]
 	curr, next := mapped[0], mapped[1]
 
 	b.WriteRune(curr)
@@ -123,6 +125,13 @@ func handleG(b *strings.Builder, chars []rune, index int) int {
 }
 
 func handleH(b *strings.Builder, chars []rune, index int) int {
+	if (index == 0 || isVowel(chars[index-1])) && index+1 < len(chars) && isVowel(chars[index+1]) {
+		b.WriteRune('H')
+		index += 2
+	} else {
+		index++
+	}
+
 	return index
 }
 
@@ -135,10 +144,19 @@ func handleL(b *strings.Builder, chars []rune, index int) int {
 }
 
 func handleP(b *strings.Builder, chars []rune, index int) int {
-	return index
-}
+	if index+1 < len(chars) && chars[index+1] == 'H' {
+		b.WriteRune('F')
+		index += 2
+	} else {
+		b.WriteRune('P')
 
-func handleR(b *strings.Builder, chars []rune, index int) int {
+		if contains(chars, index+1, 1, []rune{'P'}, []rune{'B'}) {
+			index++
+		}
+
+		index++
+	}
+
 	return index
 }
 
@@ -191,4 +209,8 @@ func equal(a, b []rune) bool {
 	}
 
 	return result
+}
+
+func isVowel(ch rune) bool {
+	return strings.ContainsRune(vowels, ch)
 }
