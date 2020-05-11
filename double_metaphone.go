@@ -215,6 +215,23 @@ func handleX(b doubleMetaphoneResult, chars []rune, index int) int {
 }
 
 func handleZ(b doubleMetaphoneResult, chars []rune, index int) int {
+	if index+1 < len(chars) && chars[index+1] == 'H' {
+		b.append('J')
+		index += 2
+	} else {
+		if contains(chars, index+1, 2, []rune{'Z', 'O'}, []rune{'Z', 'I'}, []rune{'Z', 'A'}) {
+			b.appendString("STS")
+		} else {
+			b.append('S')
+		}
+
+		if index+1 < len(chars) && chars[index+1] == 'Z' {
+			index += 2
+		} else {
+			index++
+		}
+	}
+
 	return index
 }
 

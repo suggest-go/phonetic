@@ -117,6 +117,30 @@ func TestHandle(t *testing.T) {
 			expectedIndex:  2,
 			expectedString: "P",
 		},
+		{
+			name:           "handleZH",
+			chars:          []rune{'Z', 'H', 'A', 'G'},
+			index:          0,
+			handler:        handleZ,
+			expectedIndex:  2,
+			expectedString: "J",
+		},
+		{
+			name:           "handleZZ",
+			chars:          []rune{'Z', 'Z', 'E', 'R', 'O'},
+			index:          0,
+			handler:        handleZ,
+			expectedIndex:  2,
+			expectedString: "S",
+		},
+		{
+			name:           "handleZ",
+			chars:          []rune{'Z', 'E', 'R', 'O'},
+			index:          0,
+			handler:        handleZ,
+			expectedIndex:  1,
+			expectedString: "S",
+		},
 	}
 
 	for _, testCase := range testCases {
