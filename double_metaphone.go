@@ -211,6 +211,22 @@ func handleW(b doubleMetaphoneResult, chars []rune, index int) int {
 }
 
 func handleX(b doubleMetaphoneResult, chars []rune, index int) int {
+	if index == 0 {
+		b.append('S')
+		index++
+	} else {
+		if !(index == len(chars)-1 &&
+			(contains(chars, index-3, 3, []rune{'I', 'A', 'U'}, []rune{'E', 'A', 'U'}) || contains(chars, index-2, 2, []rune{'A', 'U'}, []rune{'O', 'U'}))) {
+			b.appendString("KS")
+		}
+
+		if contains(chars, index+1, 1, []rune{'C'}, []rune{'X'}) {
+			index++
+		}
+
+		index++
+	}
+
 	return index
 }
 
