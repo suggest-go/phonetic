@@ -7,6 +7,18 @@ const (
 	vowels     = "AEIOUY"
 )
 
+type runes []rune
+
+func (c runes) at(index int) rune {
+	ch := rune(-1 << 31)
+
+	if index < len(c) && index >= 0 {
+		ch = c[index]
+	}
+
+	return ch
+}
+
 type doubleMetaphone struct {
 }
 
@@ -118,14 +130,14 @@ var mapBFKNRQV = map[rune][]rune{
 	'V': {'F', 'V'},
 }
 
-func handleBFKNRQV(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleBFKNRQV(b doubleMetaphoneResult, chars runes, index int) int {
 	ch := chars[index]
 	mapped := mapBFKNRQV[ch]
 	curr, next := mapped[0], mapped[1]
 
 	b.append(curr)
 
-	if index+1 < len(chars) && chars[index+1] == next {
+	if chars.at(index+1) == next {
 		index += 2
 	} else {
 		index++
@@ -134,11 +146,11 @@ func handleBFKNRQV(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleC(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleC(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleD(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleD(b doubleMetaphoneResult, chars runes, index int) int {
 	if contains(chars, index, 2, []rune{'D', 'G'}) {
 		if contains(chars, index+2, 1, []rune{'I'}, []rune{'E'}, []rune{'Y'}) {
 			b.append('J')
@@ -158,12 +170,12 @@ func handleD(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleG(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleG(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleH(b doubleMetaphoneResult, chars []rune, index int) int {
-	if (index == 0 || isVowel(chars[index-1])) && index+1 < len(chars) && isVowel(chars[index+1]) {
+func handleH(b doubleMetaphoneResult, chars runes, index int) int {
+	if (index == 0 || isVowel(chars.at(index-1))) && isVowel(chars.at(index+1)) {
 		b.append('H')
 		index += 2
 	} else {
@@ -173,16 +185,16 @@ func handleH(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleJ(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleJ(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleL(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleL(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleP(b doubleMetaphoneResult, chars []rune, index int) int {
-	if index+1 < len(chars) && chars[index+1] == 'H' {
+func handleP(b doubleMetaphoneResult, chars runes, index int) int {
+	if chars.at(index+1) == 'H' {
 		b.append('F')
 		index += 2
 	} else {
@@ -198,19 +210,19 @@ func handleP(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleS(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleS(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleT(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleT(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleW(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleW(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func handleX(b doubleMetaphoneResult, chars []rune, index int) int {
+func handleX(b doubleMetaphoneResult, chars runes, index int) int {
 	if index == 0 {
 		b.append('S')
 		index++
@@ -230,8 +242,8 @@ func handleX(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func handleZ(b doubleMetaphoneResult, chars []rune, index int) int {
-	if index+1 < len(chars) && chars[index+1] == 'H' {
+func handleZ(b doubleMetaphoneResult, chars runes, index int) int {
+	if chars.at(index+1) == 'H' {
 		b.append('J')
 		index += 2
 	} else {
@@ -241,7 +253,7 @@ func handleZ(b doubleMetaphoneResult, chars []rune, index int) int {
 			b.append('S')
 		}
 
-		if index+1 < len(chars) && chars[index+1] == 'Z' {
+		if chars.at(index+1) == 'Z' {
 			index += 2
 		} else {
 			index++
@@ -251,7 +263,7 @@ func handleZ(b doubleMetaphoneResult, chars []rune, index int) int {
 	return index
 }
 
-func contains(chars []rune, start, length int, criteria ...[]rune) bool {
+func contains(chars runes, start, length int, criteria ...[]rune) bool {
 	result := false
 
 	if start >= 0 && start+length <= len(chars) {

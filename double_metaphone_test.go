@@ -9,13 +9,13 @@ func TestHandle(t *testing.T) {
 		name           string
 		chars          []rune
 		index          int
-		handler        func(b doubleMetaphoneResult, chars []rune, index int) int
+		handler        func(b doubleMetaphoneResult, chars runes, index int) int
 		expectedIndex  int
 		expectedString string
 	}{
 		{
 			name:           "handleBB",
-			chars:          []rune{'B', 'B'},
+			chars:          runes{'B', 'B'},
 			index:          0,
 			handler:        handleBFKNRQV,
 			expectedIndex:  2,
@@ -23,7 +23,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleBP",
-			chars:          []rune{'B', 'P'},
+			chars:          runes{'B', 'P'},
 			index:          0,
 			handler:        handleBFKNRQV,
 			expectedIndex:  1,
@@ -31,7 +31,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleNN",
-			chars:          []rune{'N', 'N'},
+			chars:          runes{'N', 'N'},
 			index:          0,
 			handler:        handleBFKNRQV,
 			expectedIndex:  2,
@@ -39,7 +39,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleDG",
-			chars:          []rune{'E', 'D', 'G', 'E'},
+			chars:          runes{'E', 'D', 'G', 'E'},
 			index:          1,
 			handler:        handleD,
 			expectedIndex:  4,
@@ -47,7 +47,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleDG",
-			chars:          []rune{'E', 'D', 'G', 'A', 'R'},
+			chars:          runes{'E', 'D', 'G', 'A', 'R'},
 			index:          1,
 			handler:        handleD,
 			expectedIndex:  3,
@@ -55,7 +55,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleDT",
-			chars:          []rune{'D', 'T'},
+			chars:          runes{'D', 'T'},
 			index:          0,
 			handler:        handleD,
 			expectedIndex:  2,
@@ -63,7 +63,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleD",
-			chars:          []rune{'D', 'K'},
+			chars:          runes{'D', 'K'},
 			index:          0,
 			handler:        handleD,
 			expectedIndex:  1,
@@ -71,7 +71,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleH before vowels",
-			chars:          []rune{'A', 'H', 'E'},
+			chars:          runes{'A', 'H', 'E'},
 			index:          1,
 			handler:        handleH,
 			expectedIndex:  3,
@@ -79,7 +79,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleH first and next vowel",
-			chars:          []rune{'H', 'E', 'Y'},
+			chars:          runes{'H', 'E', 'Y'},
 			index:          0,
 			handler:        handleH,
 			expectedIndex:  2,
@@ -87,7 +87,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleH ignore",
-			chars:          []rune{'W', 'H', 'A', 'T'},
+			chars:          runes{'W', 'H', 'A', 'T'},
 			index:          1,
 			handler:        handleH,
 			expectedIndex:  2,
@@ -95,7 +95,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handlePH",
-			chars:          []rune{'P', 'H', 'A', 'R'},
+			chars:          runes{'P', 'H', 'A', 'R'},
 			index:          0,
 			handler:        handleP,
 			expectedIndex:  2,
@@ -103,7 +103,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleP",
-			chars:          []rune{'P', 'O', 'M'},
+			chars:          runes{'P', 'O', 'M'},
 			index:          0,
 			handler:        handleP,
 			expectedIndex:  1,
@@ -111,7 +111,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handlePP",
-			chars:          []rune{'P', 'P', 'O'},
+			chars:          runes{'P', 'P', 'O'},
 			index:          0,
 			handler:        handleP,
 			expectedIndex:  2,
@@ -119,7 +119,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleX",
-			chars:          []rune{'X', 'E', 'R'},
+			chars:          runes{'X', 'E', 'R'},
 			index:          0,
 			handler:        handleX,
 			expectedIndex:  1,
@@ -127,7 +127,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleXaux",
-			chars:          []rune{'B', 'R', 'E', 'A', 'U', 'X'},
+			chars:          runes{'B', 'R', 'E', 'A', 'U', 'X'},
 			index:          5,
 			handler:        handleX,
 			expectedIndex:  6,
@@ -135,7 +135,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleX",
-			chars:          []rune{'R', 'E', 'X'},
+			chars:          runes{'R', 'E', 'X'},
 			index:          2,
 			handler:        handleX,
 			expectedIndex:  3,
@@ -143,7 +143,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleXX",
-			chars:          []rune{'R', 'E', 'X', 'X'},
+			chars:          runes{'R', 'E', 'X', 'X'},
 			index:          2,
 			handler:        handleX,
 			expectedIndex:  4,
@@ -151,7 +151,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleZH",
-			chars:          []rune{'Z', 'H', 'A', 'G'},
+			chars:          runes{'Z', 'H', 'A', 'G'},
 			index:          0,
 			handler:        handleZ,
 			expectedIndex:  2,
@@ -159,7 +159,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleZZ",
-			chars:          []rune{'Z', 'Z', 'E', 'R', 'O'},
+			chars:          runes{'Z', 'Z', 'E', 'R', 'O'},
 			index:          0,
 			handler:        handleZ,
 			expectedIndex:  2,
@@ -167,7 +167,7 @@ func TestHandle(t *testing.T) {
 		},
 		{
 			name:           "handleZ",
-			chars:          []rune{'Z', 'E', 'R', 'O'},
+			chars:          runes{'Z', 'E', 'R', 'O'},
 			index:          0,
 			handler:        handleZ,
 			expectedIndex:  1,
