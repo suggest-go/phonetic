@@ -19,7 +19,7 @@ func (c runes) at(index int) rune {
 	return ch
 }
 
-func (c runes) contains(start, length int, criteria ...[]rune) bool {
+func (c runes) contains(start, length int, criteria ...string) bool {
 	result := false
 
 	if start >= 0 && start+length <= len(c) {
@@ -168,15 +168,15 @@ func handleC(b doubleMetaphoneResult, chars runes, index int) int {
 }
 
 func handleD(b doubleMetaphoneResult, chars runes, index int) int {
-	if chars.contains(index, 2, []rune{'D', 'G'}) {
-		if chars.contains(index+2, 1, []rune{'I'}, []rune{'E'}, []rune{'Y'}) {
+	if chars.contains(index, 2, "DG") {
+		if chars.contains(index+2, 1, "I", "E", "Y") {
 			b.append('J')
 			index += 3
 		} else {
 			b.appendString("TK")
 			index += 2
 		}
-	} else if chars.contains(index, 2, []rune{'D', 'T'}, []rune{'D', 'D'}) {
+	} else if chars.contains(index, 2, "DT", "DD") {
 		b.append('T')
 		index += 2
 	} else {
@@ -217,7 +217,7 @@ func handleP(b doubleMetaphoneResult, chars runes, index int) int {
 	} else {
 		b.append('P')
 
-		if chars.contains(index+1, 1, []rune{'P'}, []rune{'B'}) {
+		if chars.contains(index+1, 1, "P", "B") {
 			index++
 		}
 
@@ -245,11 +245,11 @@ func handleX(b doubleMetaphoneResult, chars runes, index int) int {
 		index++
 	} else {
 		if !(index == len(chars)-1 &&
-			(chars.contains(index-3, 3, []rune{'I', 'A', 'U'}, []rune{'E', 'A', 'U'}) || chars.contains(index-2, 2, []rune{'A', 'U'}, []rune{'O', 'U'}))) {
+			(chars.contains(index-3, 3, "IAU", "EAU") || chars.contains(index-2, 2, "AU", "OU"))) {
 			b.appendString("KS")
 		}
 
-		if chars.contains(index+1, 1, []rune{'C'}, []rune{'X'}) {
+		if chars.contains(index+1, 1, "C", "X") {
 			index++
 		}
 
@@ -264,7 +264,7 @@ func handleZ(b doubleMetaphoneResult, chars runes, index int) int {
 		b.append('J')
 		index += 2
 	} else {
-		if chars.contains(index+1, 2, []rune{'Z', 'O'}, []rune{'Z', 'I'}, []rune{'Z', 'A'}) {
+		if chars.contains(index+1, 2, "ZO", "ZI", "ZA") {
 			b.appendString("STS")
 		} else {
 			b.append('S')
@@ -280,15 +280,19 @@ func handleZ(b doubleMetaphoneResult, chars runes, index int) int {
 	return index
 }
 
-func equal(a, b []rune) bool {
+func equal(a []rune, b string) bool {
 	if len(a) != len(b) {
 		return false
 	}
 
 	result := true
 
-	for i := 0; i < len(a) && result; i++ {
-		result = a[i] == b[i]
+	for i, ch := range b {
+		result = ch == a[i]
+
+		if !result {
+			break
+		}
 	}
 
 	return result
