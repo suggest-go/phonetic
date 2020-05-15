@@ -19,6 +19,23 @@ func (c runes) at(index int) rune {
 	return ch
 }
 
+func (c runes) contains(start, length int, criteria ...[]rune) bool {
+	result := false
+
+	if start >= 0 && start+length <= len(c) {
+		target := c[start : start+length]
+
+		for _, candidate := range criteria {
+			if equal(target, candidate) {
+				result = true
+				break
+			}
+		}
+	}
+
+	return result
+}
+
 type doubleMetaphone struct {
 }
 
@@ -151,15 +168,15 @@ func handleC(b doubleMetaphoneResult, chars runes, index int) int {
 }
 
 func handleD(b doubleMetaphoneResult, chars runes, index int) int {
-	if contains(chars, index, 2, []rune{'D', 'G'}) {
-		if contains(chars, index+2, 1, []rune{'I'}, []rune{'E'}, []rune{'Y'}) {
+	if chars.contains(index, 2, []rune{'D', 'G'}) {
+		if chars.contains(index+2, 1, []rune{'I'}, []rune{'E'}, []rune{'Y'}) {
 			b.append('J')
 			index += 3
 		} else {
 			b.appendString("TK")
 			index += 2
 		}
-	} else if contains(chars, index, 2, []rune{'D', 'T'}, []rune{'D', 'D'}) {
+	} else if chars.contains(index, 2, []rune{'D', 'T'}, []rune{'D', 'D'}) {
 		b.append('T')
 		index += 2
 	} else {
@@ -200,7 +217,7 @@ func handleP(b doubleMetaphoneResult, chars runes, index int) int {
 	} else {
 		b.append('P')
 
-		if contains(chars, index+1, 1, []rune{'P'}, []rune{'B'}) {
+		if chars.contains(index+1, 1, []rune{'P'}, []rune{'B'}) {
 			index++
 		}
 
@@ -228,11 +245,11 @@ func handleX(b doubleMetaphoneResult, chars runes, index int) int {
 		index++
 	} else {
 		if !(index == len(chars)-1 &&
-			(contains(chars, index-3, 3, []rune{'I', 'A', 'U'}, []rune{'E', 'A', 'U'}) || contains(chars, index-2, 2, []rune{'A', 'U'}, []rune{'O', 'U'}))) {
+			(chars.contains(index-3, 3, []rune{'I', 'A', 'U'}, []rune{'E', 'A', 'U'}) || chars.contains(index-2, 2, []rune{'A', 'U'}, []rune{'O', 'U'}))) {
 			b.appendString("KS")
 		}
 
-		if contains(chars, index+1, 1, []rune{'C'}, []rune{'X'}) {
+		if chars.contains(index+1, 1, []rune{'C'}, []rune{'X'}) {
 			index++
 		}
 
@@ -247,7 +264,7 @@ func handleZ(b doubleMetaphoneResult, chars runes, index int) int {
 		b.append('J')
 		index += 2
 	} else {
-		if contains(chars, index+1, 2, []rune{'Z', 'O'}, []rune{'Z', 'I'}, []rune{'Z', 'A'}) {
+		if chars.contains(index+1, 2, []rune{'Z', 'O'}, []rune{'Z', 'I'}, []rune{'Z', 'A'}) {
 			b.appendString("STS")
 		} else {
 			b.append('S')
@@ -261,23 +278,6 @@ func handleZ(b doubleMetaphoneResult, chars runes, index int) int {
 	}
 
 	return index
-}
-
-func contains(chars runes, start, length int, criteria ...[]rune) bool {
-	result := false
-
-	if start >= 0 && start+length <= len(chars) {
-		target := chars[start : start+length]
-
-		for _, candidate := range criteria {
-			if equal(target, candidate) {
-				result = true
-				break
-			}
-		}
-	}
-
-	return result
 }
 
 func equal(a, b []rune) bool {
