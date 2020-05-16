@@ -118,6 +118,22 @@ func TestHandle(t *testing.T) {
 			expectedString: "P",
 		},
 		{
+			name:           "handleWR",
+			chars:          runes{'W', 'R', 'A', 'N', 'K'},
+			index:          0,
+			handler:        handleW,
+			expectedIndex:  2,
+			expectedString: "R",
+		},
+		{
+			name:           "handleWPolish",
+			chars:          runes{'F', 'I', 'L', 'I', 'P', 'O', 'W', 'I', 'C', 'Z'},
+			index:          6,
+			handler:        handleW,
+			expectedIndex:  10,
+			expectedString: "TS",
+		},
+		{
 			name:           "handleX",
 			chars:          runes{'X', 'E', 'R'},
 			index:          0,

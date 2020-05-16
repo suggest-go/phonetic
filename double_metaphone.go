@@ -65,7 +65,15 @@ func (r doubleMetaphoneResult) appendAlternate(ch rune) {
 }
 
 func (r doubleMetaphoneResult) appendString(str string) {
+	r.appendStringPrimary(str)
+	r.appendStringAlternate(str)
+}
+
+func (r doubleMetaphoneResult) appendStringPrimary(str string) {
 	r.primary.WriteString(str)
+}
+
+func (r doubleMetaphoneResult) appendStringAlternate(str string) {
 	r.alternate.WriteString(str)
 }
 
@@ -236,6 +244,33 @@ func handleT(b doubleMetaphoneResult, chars runes, index int) int {
 }
 
 func handleW(b doubleMetaphoneResult, chars runes, index int) int {
+	if chars.contains(index, 2, "WR") {
+		b.append('R')
+		index += 2
+	} else {
+		if index == 0 && (isVowel(chars.at(index+1)) || chars.contains(index, 2, "WH")) {
+			if isVowel(chars.at(index + 1)) {
+				b.appendPrimary('A')
+				b.appendAlternate('F')
+			} else {
+				b.append('A')
+			}
+
+			index++
+		} else if index == len(chars)-1 && isVowel(chars.at(index-1)) ||
+			chars.contains(index-1, 5, "EWSKI", "EWSKY", "OWSKI", "OWSKY") ||
+			chars.contains(0, 3, "SCH") {
+			b.appendAlternate('F')
+			index++
+		} else if chars.contains(index, 4, "WICZ", "WITZ") {
+			b.appendStringPrimary("TS")
+			b.appendStringAlternate("FX")
+			index += 4
+		} else {
+			index++
+		}
+	}
+
 	return index
 }
 
